@@ -1,0 +1,381 @@
+
+apic:
+  tenants:
+    - name: ts-ocp-1
+      vrfs:
+        - name: ts-ocp-1.vrf-01 
+          leaked_internal_prefixes:
+            - prefix: "10.61.21.1/24"
+              public: true
+              destinations:
+                - tenant: infraservices
+                  vrf: infraservices.vrf-01
+          leaked_external_prefixes:
+              # ingress
+            - prefix: "10.61.16.0/24"
+              destinations:
+                - tenant: infraservices
+                  vrf: infraservices.vrf-01
+              from_prefix_length: 32
+              # egress
+            - prefix: "10.61.6.80/28"
+              destinations:
+                - tenant: infraservices
+                  vrf: infraservices.vrf-01
+              from_prefix_length: 32
+              # pods
+            - prefix: "10.56.0.0/16"
+              destinations:
+                - tenant: infraservices
+                  vrf: infraservices.vrf-01
+              from_prefix_length: 32
+        
+      bridge_domains:
+        - name: vlan-801
+          vrf: ts-ocp-1.vrf-01
+          subnets: 
+          - ip: 10.61.21.1/24
+
+
+        - name: vlan-802
+          vrf: ts-ocp-1.vrf-01
+          subnets: 
+          - ip: 10.61.22.1/24
+
+        - name: vlan-803
+          vrf: ts-ocp-1.vrf-01
+          subnets: 
+          - ip: 10.61.23.1/24
+
+      application_profiles:
+        - name: openshift
+          endpoint_security_groups:
+            - name: ns1
+              vrf: ts-ocp-1.vrf-01
+              deployment_immediacy: immediate
+              contracts:
+                providers:
+                  - permit-to-ingress
+
+            - name: ns2
+              vrf: ts-ocp-1.vrf-01
+              deployment_immediacy: immediate
+              contracts:
+                providers:
+                  - permit-to-ingress
+
+            - name: http-server
+              vrf: ts-ocp-1.vrf-01
+              deployment_immediacy: immediate
+              contracts:
+                providers:
+                  - permit-to-http-server
+
+            - name: ingress
+              vrf: ts-ocp-1.vrf-01
+              deployment_immediacy: immediate
+              ip_external_subnet_selectors:
+                - ip: "10.61.16.0/24"
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-ingress
+
+            - name: egress
+              vrf: ts-ocp-1.vrf-01
+              deployment_immediacy: immediate
+              ip_external_subnet_selectors:
+                - ip: "10.61.6.80/28"
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-egress
+
+            - name: loki-nxos
+              vrf: ts-ocp-1.vrf-01
+              deployment_immediacy: immediate
+              contracts:
+                providers:
+                  - permit-to-loki-nxos
+
+            - name: nacapi
+              vrf: ts-ocp-1.vrf-01
+              deployment_immediacy: immediate
+              contracts:
+                providers:
+                  - permit-to-nacapi
+
+        - name: vms
+          endpoint_groups:
+            - name: vlan-801
+              bridge_domain: vlan-801
+              physical_domains:
+                - ts-ocp-1-bm-virt
+
+            - name: vlan-802
+              bridge_domain: vlan-802
+              physical_domains:
+                - ts-ocp-1-bm-virt
+
+            - name: vlan-803
+              bridge_domain: vlan-803
+              physical_domains:
+                - ts-ocp-1-bm-virt
+
+          endpoint_security_groups:
+            - name: nad-801
+              vrf: ts-ocp-1.vrf-01
+              epg_selectors:
+                - endpoint_group: vlan-801
+              contracts:
+                providers:
+                  - permit-to-nad-801
+                consumers:
+                  - permit-to-ingress
+
+      l3outs:     
+        - name: ts-ocp-1.vrf-01.bgp
+          description: L3out Floating SVI to ts-ocp-1
+          vrf: ts-ocp-1.vrf-01
+          domain: ts-ocp-1.vrf-01.l3out-bgp
+          import_route_control_enforcement: true
+          import_route_map:
+            type: global
+            contexts:
+              - name: all
+                action: permit
+                match_rules:
+                  - all
+          external_endpoint_groups:
+            - name: nodes
+              description: ocp nodes
+              subnets:
+                - prefix: 10.61.6.32/28
+                  shared_route_control: true
+                  import_security: true
+                  shared_security: true
+              contracts:
+                providers:
+                  - permit-to-10.61.6.32-28
+                consumers:
+                  - permit-to-ingress
+                imported_consumers:
+                  - permit-to-infraservices-10.9.205.0-24
+
+            # - name: pods # applicable when using clustermesh
+            #   description: ocp podcidr
+            #   subnets:
+            #     - prefix: 10.56.0.0/16
+            #       shared_route_control: true
+            #       import_security: true
+            #       shared_security: true
+            #       aggregate_shared_route_control: true 
+            #   contracts:
+            #     providers:
+            #       - permit-to-10.56.0.0-16
+
+            # - name: egress # pod initiated traffic via egressgw
+            #   description: ocp egress
+            #   subnets:
+            #     - prefix: 10.61.6.80/28
+            #       shared_route_control: true
+            #       import_security: true
+            #       shared_security: true
+            #   contracts:
+            #     providers:
+            #       - permit-to-10.61.6.80-28
+
+            # - name: ingress # full lb service range
+            #   description: ocp service range
+            #   subnets:
+            #     - prefix: 10.61.6.48/28
+            #       shared_route_control: true
+            #       import_security: true
+            #       shared_security: true
+            #       aggregate_shared_route_control: true  
+            #   contracts:
+            #     providers:
+            #       - permit-to-10.61.6.48-28       
+
+
+          node_profiles:
+            - name: border-leafs
+              nodes:
+                - node_id: 101
+                  router_id: 101.1.0.4               
+                - node_id: 102
+                  router_id: 102.1.0.4   
+              bgp:
+                as_path_policy: cilium-bp
+              interface_profiles:     
+                - name: border-leafs              # this creates a single interface profile for the vpc, with 2x anchor nodes
+                  interfaces:
+                    - node_id: 101
+                      mode: regular
+                      vlan: 404
+                      floating_svi: true
+                      paths:
+                        - floating_ip: 10.61.6.45/28
+                          physical_domain: titansphere
+                        - floating_ip: 10.61.6.45/28
+                          physical_domain: ts-ocp-1-bm
+                      ip: 10.61.6.43/28
+                      ip_shared: 10.61.6.46/28
+                      mtu: 9000
+                      bgp_peers:
+                        - ip: 10.61.6.32/28
+                          remote_as: 65113
+                          local_as: 65002
+                          as_override: true
+                          disable_peer_as_check: true
+                          multicast_address_family: false
+                          as_propagate: no-prepend
+                          peer_prefix_policy: cilium-cni
+                    - node_id: 102
+                      mode: regular
+                      vlan: 404
+                      floating_svi: true
+                      paths:
+                        - floating_ip: 10.61.6.45/28
+                          physical_domain: titansphere
+                        - floating_ip: 10.61.6.45/28
+                          physical_domain: ts-ocp-1-bm
+                      ip: 10.61.6.44/28
+                      ip_shared: 10.61.6.46/28
+                      mtu: 9000
+                      bgp_peers:
+                        - ip: 10.61.6.32/28
+                          remote_as: 65113
+                          local_as: 65002
+                          as_override: true
+                          disable_peer_as_check: true
+                          multicast_address_family: false
+                          as_propagate: no-prepend
+                          peer_prefix_policy: cilium-cni
+
+  
+      policies:
+        match_rules:
+        - name: all
+          prefixes:
+            - ip: 0.0.0.0/0
+              aggregate: true
+
+
+        bgp_best_path_policies:
+          - name: cilium-bp
+            ignore_igp_metric: true
+
+        bgp_peer_prefix_policies:
+          - name: cilium-cni
+            description: BGP prefix policies for cilium cni
+            action: reject
+            threshold: 75
+            max_prefixes: 500
+
+      contracts:
+        - name: permit-to-nodes
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-10.61.6.32-28
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-pods
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-egress
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-ingress
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-loki-nxos
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-nacapi
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-nad-801
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-http-server
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+      filters:
+        - name: tcp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: tcp
+              
+        - name: udp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: udp
+
+        - name: icmp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ipv4
+              protocol: icmp
+
+      imported_contracts:
+        - name: permit-to-infraservices-10.9.205.0-24
+          tenant: infraservices
+          contract: permit-to-10.9.205.0-24
+

@@ -1,0 +1,190 @@
+apic:
+  new_interface_configuration: true
+  access_policies:
+    leaf_interface_policy_groups:
+      # Access
+      - name: inb-mgmt-access
+        type: access
+        aaep: vlans-allowed-to-inb-mgmt
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      - name: purestorage-eth6-access
+        type: access
+        aaep: vlans-allowed-to-purestorage-eth6
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      - name: purestorage-eth7-access
+        type: access
+        aaep: vlans-allowed-to-purestorage-eth7
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      - name: ts-ocp-storage-ens1f2-access
+        type: access
+        aaep: vlans-allowed-to-ts-ocp-storage-ens1f2
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      - name: ts-ocp-storage-ens1f3-access
+        type: access
+        aaep: vlans-allowed-to-ts-ocp-storage-ens1f3
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      - name: edge-access
+        type: access
+        aaep: vlans-allowed-to-edge
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      # Portchannel
+      - name: titansphere-fi-a-storage-pc
+        type: pc
+        port_channel_policy: system-lacp-active
+        aaep: vlans-allowed-to-purestorage-eth6
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      - name: titansphere-fi-b-storage-pc
+        type: pc
+        port_channel_policy: system-lacp-active
+        aaep: vlans-allowed-to-purestorage-eth7
+        link_level_policy: system-link-level-10G-auto
+        lldp_policy: system-lldp-enabled
+        l2_policy: port-local-vlans
+
+      # VPC
+      - name: cat-core-vpc
+        type: vpc
+        aaep: vlans-allowed-to-cat-core
+        link_level_policy: system-link-level-40G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: baelen-vpc
+        type: vpc
+        aaep: vlans-allowed-to-baelen
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: flexpod-fi-a-vpc
+        type: vpc
+        aaep: vlans-allowed-to-flexpod
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: flexpod-fi-b-vpc
+        type: vpc
+        aaep: vlans-allowed-to-flexpod
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: nutanix-fi-a-vpc
+        type: vpc
+        aaep: vlans-allowed-to-nutanix
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: nutanix-fi-b-vpc
+        type: vpc
+        aaep: vlans-allowed-to-nutanix
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: titansphere-fi-a-vpc
+        type: vpc
+        aaep: vlans-allowed-to-titansphere
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: titansphere-fi-b-vpc
+        type: vpc
+        aaep: vlans-allowed-to-titansphere
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: ts-ocp-1-p1-vpc
+        type: vpc
+        aaep: vlans-allowed-to-ts-ocp-1-bm
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: ts-ocp-1-p1-virt-vpc
+        type: vpc
+        aaep: vlans-allowed-to-ts-ocp-1-bm-virt
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: ts-ocp-1-p2-vpc
+        type: vpc
+        aaep: vlans-allowed-to-ts-ocp-1-bm
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: ts-ocp-1-p2-virt-vpc
+        type: vpc
+        aaep: vlans-allowed-to-ts-ocp-1-bm-virt
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: netapp-1-vpc
+        type: vpc
+        aaep: vlans-allowed-to-netapp
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans
+
+      - name: netapp-2-vpc
+        type: vpc
+        aaep: vlans-allowed-to-netapp
+        link_level_policy: system-link-level-10G-auto
+        cdp_policy: system-cdp-enabled
+        lldp_policy: system-lldp-enabled
+        port_channel_policy: system-lacp-active
+        l2_policy: port-local-vlans

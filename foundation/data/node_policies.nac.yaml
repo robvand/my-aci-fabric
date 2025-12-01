@@ -1,0 +1,67 @@
+apic:
+  node_policies:
+    inb_endpoint_group: default
+    nodes:
+      - id: 1
+        role: apic
+        name: apic-1
+        oob_address: 10.61.126.4/24
+        oob_gateway: 10.61.126.1
+        inb_address: 10.1.11.4/24
+        inb_gateway: 10.1.11.1
+      - id: 101
+        role: leaf
+        name: leaf-101
+        serial_number: FDO28400Z6C
+        oob_address: 10.61.126.50/24
+        oob_gateway: 10.61.126.1
+        inb_address: 10.1.11.50/24
+        inb_gateway: 10.1.11.1
+        update_group: odd
+        fabric_policy_group: leafs
+        security_domains:
+          - all
+      - id: 102
+        role: leaf
+        name: leaf-102
+        serial_number: FDO28400ZDY
+        oob_address: 10.61.126.51/24
+        oob_gateway: 10.61.126.1
+        inb_address: 10.1.11.51/24
+        inb_gateway: 10.1.11.1
+        update_group: even
+        fabric_policy_group: leafs
+        security_domains:
+          - all
+      - id: 201
+        role: spine
+        name: spine-201
+        serial_number: FDO284318Z2
+        oob_address: 10.61.126.52/24
+        oob_gateway: 10.61.126.1
+        inb_address: 10.1.11.52/24
+        inb_gateway: 10.1.11.1
+        update_group: odd
+        fabric_policy_group: spines
+      - id: 202
+        role: spine
+        name: spine-202
+        serial_number: FDO284318ZA
+        oob_address: 10.61.126.53/24
+        oob_gateway: 10.61.126.1
+        inb_address: 10.1.11.53/24
+        inb_gateway: 10.1.11.1
+        update_group: even
+        fabric_policy_group: spines
+    update_groups:
+      - name: odd
+        target_version: n9000-16.1(4h)
+      - name: even
+        target_version: n9000-16.1(4h)
+    vpc_groups:
+      mode: explicit
+      groups:
+        - id: 1
+          name: leaf-101-and-102
+          switch_1: 101
+          switch_2: 102

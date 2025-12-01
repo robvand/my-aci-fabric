@@ -1,0 +1,820 @@
+apic:
+  tenants:
+    - name: infraservices
+      vrfs:
+        - name: infraservices.vrf-01
+          leaked_external_prefixes:
+            - prefix: 0.0.0.0/0
+              destinations:
+                - tenant: flexpod
+                  vrf: flexpod.vrf-01
+                - tenant: titansphere
+                  vrf: titansphere.vrf-01              
+                - tenant: cl-tal-1
+                  vrf: cl-tal-1.vrf-01
+                - tenant: cl-tal-2
+                  vrf: cl-tal-2.vrf-01
+                - tenant: cl-tal-3
+                  vrf: cl-tal-3.vrf-01
+                - tenant: cl-tal-4
+                  vrf: cl-tal-4.vrf-01
+                - tenant: cl-tal-5
+                  vrf: cl-tal-5.vrf-01
+                - tenant: cl-tal-6
+                  vrf: cl-tal-6.vrf-01
+                - tenant: cl-tal-7
+                  vrf: cl-tal-7.vrf-01
+                - tenant: cl-tal-8
+                  vrf: cl-tal-8.vrf-01
+                - tenant: cl-tal-9
+                  vrf: cl-tal-9.vrf-01
+                - tenant: cl-tal-10
+                  vrf: cl-tal-10.vrf-01
+                - tenant: cl-tal-11
+                  vrf: cl-tal-11.vrf-01
+                - tenant: cl-tal-12
+                  vrf: cl-tal-12.vrf-01
+                - tenant: cl-tal-13
+                  vrf: cl-tal-13.vrf-01
+                - tenant: cl-tal-14
+                  vrf: cl-tal-14.vrf-01
+                - tenant: cl-tal-15
+                  vrf: cl-tal-15.vrf-01
+                - tenant: cl-tal-16
+                  vrf: cl-tal-16.vrf-01
+                - tenant: cl-tal-17
+                  vrf: cl-tal-17.vrf-01
+                - tenant: cl-tal-18
+                  vrf: cl-tal-18.vrf-01
+                - tenant: cl-tal-19
+                  vrf: cl-tal-19.vrf-01
+                - tenant: cl-tal-20
+                  vrf: cl-tal-20.vrf-01
+                - tenant: cl-tal-21
+                  vrf: cl-tal-21.vrf-01
+                - tenant: cl-tal-22
+                  vrf: cl-tal-22.vrf-01
+                - tenant: cl-tal-23
+                  vrf: cl-tal-23.vrf-01
+                - tenant: cl-tal-24
+                  vrf: cl-tal-24.vrf-01
+                - tenant: cl-tal-25
+                  vrf: cl-tal-25.vrf-01
+                - tenant: cl-tal-26
+                  vrf: cl-tal-26.vrf-01
+                - tenant: cl-tal-27
+                  vrf: cl-tal-27.vrf-01
+                - tenant: cl-tal-28
+                  vrf: cl-tal-28.vrf-01
+                - tenant: cl-tal-29
+                  vrf: cl-tal-29.vrf-01
+                - tenant: cl-tal-30
+                  vrf: cl-tal-30.vrf-01
+                - tenant: ts-ocp-1
+                  vrf: ts-ocp-1.vrf-01
+
+      bridge_domains:
+        - name: 10.9.201.0-24
+          vrf: infraservices.vrf-01
+          subnets:
+            - ip: 10.9.201.1/24
+
+        - name: 10.9.202.0-24
+          vrf: infraservices.vrf-01
+          subnets:
+            - ip: 10.9.202.1/24
+
+        - name: 10.9.203.0-24
+          vrf: infraservices.vrf-01
+          subnets:
+            - ip: 10.9.203.1/24
+
+        - name: 10.9.204.0-24
+          vrf: infraservices.vrf-01
+          subnets:
+            - ip: 10.9.204.1/24
+
+        - name: 10.9.205.0-24
+          vrf: infraservices.vrf-01
+          subnets:
+            - ip: 10.9.205.1/24
+              shared: true
+              public: true    
+
+      application_profiles:
+        - name: purestorage
+          endpoint_groups:
+            - name: eth6
+              bridge_domain: 10.9.201.0-24
+              physical_domains:
+                - purestorage
+                - nutanix
+                - titansphere
+                - ts-ocp-storage
+            - name: eth7
+              bridge_domain: 10.9.202.0-24
+              physical_domains:
+                - purestorage
+                - nutanix
+                - titansphere
+                - ts-ocp-storage
+
+        - name: netapp
+          endpoint_groups:
+            - name: vlan-203
+              bridge_domain: 10.9.203.0-24
+              physical_domains:
+                - netapp
+                - flexpod
+            - name: vlan-204
+              bridge_domain: 10.9.204.0-24
+              physical_domains:
+                - netapp
+                - flexpod
+            - name: vlan-205
+              bridge_domain: 10.9.205.0-24
+              physical_domains:
+                - netapp
+              contracts:
+                providers:
+                  - permit-to-10.9.205.0-24
+              subnets:
+                - ip: 10.9.205.1/24
+                  public: true
+                  shared: true
+
+          endpoint_security_groups:
+            - name: vlan-205
+              vrf: infraservices.vrf-01
+              epg_selectors:
+                - endpoint_group: vlan-205
+              contracts:
+                providers:
+                  - permit-to-ontap
+
+      l3outs:
+        - name: infraservices.vrf-01.l3out-bgp-core
+          description: L3out to cat9k
+          vrf: infraservices.vrf-01
+          domain: infraservices.vrf-01.l3out-bgp-core
+          node_profiles:
+            - name: border-leafs
+              nodes:
+                - node_id: 101
+                  router_id: 101.1.0.4 
+                  router_id_as_loopback: false
+                - node_id: 102
+                  router_id: 102.1.0.4
+                  router_id_as_loopback: false
+              interface_profiles:     
+                - name: cat-core-vpc
+                  interfaces:
+                    - node_id: 101
+                      node2_id: 102
+                      channel: cat-core-vpc
+                      mode: regular
+                      vlan: 302
+                      svi: true
+                      ip_a: 10.30.2.101/24
+                      ip_b: 10.30.2.102/24
+                      ip_shared: 10.30.2.1/24
+                      mtu: 9000
+                      bgp_peers:
+                        - ip: 10.30.2.2/32
+                          remote_as: 65000
+                          local_as: 65003
+                          as_override: true
+                          multicast_address_family: false
+                          as_propagate: no-prepend
+
+          external_endpoint_groups:
+            - name: external-subnets
+              subnets:
+                - prefix: 0.0.0.0/1
+                  shared_route_control: true
+                  import_security: true
+                  shared_security: true
+                - prefix: 128.0.0.0/1
+                  shared_route_control: true
+                  import_security: true
+                  shared_security: true
+                - prefix: 0.0.0.0/0
+                  export_route_control: true
+                  aggregate_export_route_control: true
+                  import_security: false
+                  shared_route_control: true
+                - prefix: 10.61.0.0/16
+                  export_route_control: true
+                  import_security: false
+                  bgp_route_summarization_policy: bgp-summary-pol
+
+              contracts:
+                consumers:
+                  # from-tn-infraservices
+                  - permit-to-10.9.205.0-24
+                imported_consumers:
+                  # from tn-titansphere
+                  - permit-to-titansphere-10.61.129.0-24
+                  - permit-to-titansphere-10.61.130.0-24
+                  - permit-to-titansphere-10.61.133.0-24
+                  - permit-to-titansphere-nodes
+                  - permit-to-titansphere-vms
+                  # from tn-mgmt
+                  - permit-to-mgmt-10.1.11.0-24
+                  # from tn-baelen
+                  - permit-to-baelen-10.61.131.0-24
+                  # from tn-flexpod
+                  - permit-to-flexpod-10.61.132.0-24
+                  - permit-to-flexpod-vms
+                  # from tn-nutanix
+                  - permit-to-nutanix-10.61.127.0-24
+                  - permit-to-nutanix-10.61.128.0-24
+                  # permit from tn-edge
+                  - permit-to-edge-10.61.134.0-24
+                  # from tn-ts-ocp-1
+                  - permit-to-ts-ocp-1-nodes
+                  - permit-to-ts-ocp-1-ingress
+                  - permit-to-ts-ocp-1-egress
+                  - permit-to-ts-ocp-1-pods
+                  - permit-to-ts-ocp-1-nad-801
+                  - permit-to-ts-ocp-1-nad-802
+                  - permit-to-ts-ocp-1-nad-803                  
+                  - permit-to-ts-ocp-1-http-server
+                  - permit-to-ts-ocp-1-loki-nxos
+                  - permit-to-ts-ocp-1-nacapi
+                  # from tn-ts-tal-1
+                  - permit-to-ts-tal-1-10.61.7.32-28
+                  - permit-to-ts-tal-1-10.61.7.48-28
+                  - permit-to-ts-tal-1-10.61.7.80-28
+                  # from tn-cl-tal-1
+                  - permit-to-cl-tal-1-nodes
+                  - permit-to-cl-tal-1-ingress
+                  - permit-to-cl-tal-1-egress
+                  # from tn-cl-tal-2
+                  - permit-to-cl-tal-2-nodes
+                  - permit-to-cl-tal-2-ingress
+                  - permit-to-cl-tal-2-egress
+                  # from tn-cl-tal-3
+                  - permit-to-cl-tal-3-nodes
+                  - permit-to-cl-tal-3-ingress
+                  - permit-to-cl-tal-3-egress
+                  # from tn-cl-tal-4
+                  - permit-to-cl-tal-4-nodes
+                  - permit-to-cl-tal-4-ingress
+                  - permit-to-cl-tal-4-egress
+                  # from tn-cl-tal-5
+                  - permit-to-cl-tal-5-nodes
+                  - permit-to-cl-tal-5-ingress
+                  - permit-to-cl-tal-5-egress
+                  # from tn-cl-tal-6
+                  - permit-to-cl-tal-6-nodes
+                  - permit-to-cl-tal-6-ingress
+                  - permit-to-cl-tal-6-egress
+                  # from tn-cl-tal-7
+                  - permit-to-cl-tal-7-nodes
+                  - permit-to-cl-tal-7-ingress
+                  - permit-to-cl-tal-7-egress
+                  # from tn-cl-tal-8
+                  - permit-to-cl-tal-8-nodes
+                  - permit-to-cl-tal-8-ingress
+                  - permit-to-cl-tal-8-egress
+                  # from tn-cl-tal-9
+                  - permit-to-cl-tal-9-nodes
+                  - permit-to-cl-tal-9-ingress
+                  - permit-to-cl-tal-9-egress
+                  # from tn-cl-tal-10
+                  - permit-to-cl-tal-10-nodes
+                  - permit-to-cl-tal-10-ingress
+                  - permit-to-cl-tal-10-egress
+                  # from tn-cl-tal-11
+                  - permit-to-cl-tal-11-nodes
+                  - permit-to-cl-tal-11-ingress
+                  - permit-to-cl-tal-11-egress
+                  # from tn-cl-tal-12
+                  - permit-to-cl-tal-12-nodes
+                  - permit-to-cl-tal-12-ingress
+                  - permit-to-cl-tal-12-egress
+                  # from tn-cl-tal-13
+                  - permit-to-cl-tal-13-nodes
+                  - permit-to-cl-tal-13-ingress
+                  - permit-to-cl-tal-13-egress
+                  # from tn-cl-tal-14
+                  - permit-to-cl-tal-14-nodes
+                  - permit-to-cl-tal-14-ingress
+                  - permit-to-cl-tal-14-egress
+                  # from tn-cl-tal-15
+                  - permit-to-cl-tal-15-nodes
+                  - permit-to-cl-tal-15-ingress
+                  - permit-to-cl-tal-15-egress
+                  # from tn-cl-tal-16
+                  - permit-to-cl-tal-16-nodes
+                  - permit-to-cl-tal-16-ingress
+                  - permit-to-cl-tal-16-egress
+                  # from tn-cl-tal-17
+                  - permit-to-cl-tal-17-nodes
+                  - permit-to-cl-tal-17-ingress
+                  - permit-to-cl-tal-17-egress
+                  # from tn-cl-tal-18
+                  - permit-to-cl-tal-18-nodes
+                  - permit-to-cl-tal-18-ingress
+                  - permit-to-cl-tal-18-egress
+                  # from tn-cl-tal-19
+                  - permit-to-cl-tal-19-nodes
+                  - permit-to-cl-tal-19-ingress
+                  - permit-to-cl-tal-19-egress
+                  # from tn-cl-tal-20
+                  - permit-to-cl-tal-20-nodes
+                  - permit-to-cl-tal-20-ingress
+                  - permit-to-cl-tal-20-egress
+                  # from tn-cl-tal-21
+                  - permit-to-cl-tal-21-nodes
+                  - permit-to-cl-tal-21-ingress
+                  - permit-to-cl-tal-21-egress
+                  # from tn-cl-tal-22
+                  - permit-to-cl-tal-22-nodes
+                  - permit-to-cl-tal-22-ingress
+                  - permit-to-cl-tal-22-egress
+                  # from tn-cl-tal-23
+                  - permit-to-cl-tal-23-nodes
+                  - permit-to-cl-tal-23-ingress
+                  - permit-to-cl-tal-23-egress
+                  # from tn-cl-tal-24
+                  - permit-to-cl-tal-24-nodes
+                  - permit-to-cl-tal-24-ingress
+                  - permit-to-cl-tal-24-egress
+                  # from tn-cl-tal-25
+                  - permit-to-cl-tal-25-nodes
+                  - permit-to-cl-tal-25-ingress
+                  - permit-to-cl-tal-25-egress
+                  # from tn-cl-tal-26
+                  - permit-to-cl-tal-26-nodes
+                  - permit-to-cl-tal-26-ingress
+                  - permit-to-cl-tal-26-egress
+                  # from tn-cl-tal-27
+                  - permit-to-cl-tal-27-nodes
+                  - permit-to-cl-tal-27-ingress
+                  - permit-to-cl-tal-27-egress
+                  # from tn-cl-tal-28
+                  - permit-to-cl-tal-28-nodes
+                  - permit-to-cl-tal-28-ingress
+                  - permit-to-cl-tal-28-egress
+                  # from tn-cl-tal-29
+                  - permit-to-cl-tal-29-nodes
+                  - permit-to-cl-tal-29-ingress
+                  - permit-to-cl-tal-29-egress
+                  # from tn-cl-tal-30
+                  - permit-to-cl-tal-30-nodes
+                  - permit-to-cl-tal-30-ingress
+                  - permit-to-cl-tal-30-egress
+
+
+      contracts:
+        - name: permit-to-10.9.205.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: permit-to-ontap
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+      filters:
+        - name: ip-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: unspecified
+
+
+      imported_contracts:
+        # from tn-titansphere
+        - name: permit-to-titansphere-10.61.129.0-24
+          tenant: titansphere
+          contract: permit-to-10.61.129.0-24
+        - name: permit-to-titansphere-10.61.130.0-24
+          tenant: titansphere
+          contract: permit-to-10.61.130.0-24
+        - name: permit-to-titansphere-10.61.133.0-24
+          tenant: titansphere
+          contract: permit-to-10.61.133.0-24
+        - name: permit-to-titansphere-vms
+          tenant: titansphere
+          contract: permit-to-vms
+        - name: permit-to-titansphere-nodes
+          tenant: titansphere
+          contract: permit-to-nodes
+
+        # from tn-mgmt
+        - name: permit-to-mgmt-10.1.11.0-24
+          tenant: mgmt
+          contract: permit-to-10.1.11.0-24
+
+        # from tn-baelen
+        - name: permit-to-baelen-10.61.131.0-24
+          tenant: baelen
+          contract: permit-to-10.61.131.0-24
+
+        # from tn-flexpod
+        - name: permit-to-flexpod-10.61.132.0-24
+          tenant: flexpod
+          contract: permit-to-10.61.132.0-24
+        - name: permit-to-flexpod-vms
+          tenant: flexpod
+          contract: permit-to-vms
+
+        # from tn-edge
+        - name: permit-to-edge-10.61.134.0-24
+          tenant: edge
+          contract: permit-to-10.61.134.0-24
+
+        # from tn-nutanix
+        - name: permit-to-nutanix-10.61.127.0-24
+          tenant: nutanix
+          contract: permit-to-10.61.127.0-24
+        - name: permit-to-nutanix-10.61.128.0-24
+          tenant: nutanix
+          contract: permit-to-10.61.128.0-24
+
+        # from tn-ts-ocp-1
+        - name: permit-to-ts-ocp-1-nodes
+          tenant: ts-ocp-1
+          contract: permit-to-nodes
+        - name: permit-to-ts-ocp-1-ingress
+          tenant: ts-ocp-1
+          contract: permit-to-ingress
+        - name: permit-to-ts-ocp-1-egress
+          tenant: ts-ocp-1
+          contract: permit-to-egress
+        - name: permit-to-ts-ocp-1-pods
+          tenant: ts-ocp-1
+          contract: permit-to-pods
+        - name: permit-to-ts-ocp-1-nad-801
+          tenant: ts-ocp-1
+          contract: permit-to-nad-801
+        - name: permit-to-ts-ocp-1-nad-802
+          tenant: ts-ocp-1
+          contract: permit-to-nad-802
+        - name: permit-to-ts-ocp-1-nad-803
+          tenant: ts-ocp-1
+          contract: permit-to-nad-803
+        - name: permit-to-ts-ocp-1-http-server
+          tenant: ts-ocp-1
+          contract: permit-to-http-server
+        - name: permit-to-ts-ocp-1-loki-nxos
+          tenant: ts-ocp-1
+          contract: permit-to-loki-nxos
+        - name: permit-to-ts-ocp-1-nacapi
+          tenant: ts-ocp-1
+          contract: permit-to-nacapi
+
+        # from tn-ts-tal-1
+        - name: permit-to-ts-tal-1-10.61.7.32-28
+          tenant: ts-tal-1
+          contract: permit-to-10.61.7.32-28
+        - name: permit-to-ts-tal-1-10.61.7.48-28
+          tenant: ts-tal-1
+          contract: permit-to-10.61.7.48-28
+        - name: permit-to-ts-tal-1-10.61.7.80-28
+          tenant: ts-tal-1
+          contract: permit-to-10.61.7.80-28
+
+        # from tn-cl-tal-1
+        - name: permit-to-cl-tal-1-nodes
+          tenant: cl-tal-1
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-1-ingress
+          tenant: cl-tal-1
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-1-egress
+          tenant: cl-tal-1
+          contract: permit-to-egress
+
+        # from tn-cl-tal-2
+        - name: permit-to-cl-tal-2-nodes
+          tenant: cl-tal-2
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-2-ingress
+          tenant: cl-tal-2
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-2-egress
+          tenant: cl-tal-2
+          contract: permit-to-egress
+
+        # from tn-cl-tal-3
+        - name: permit-to-cl-tal-3-nodes
+          tenant: cl-tal-3
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-3-ingress
+          tenant: cl-tal-3
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-3-egress
+          tenant: cl-tal-3
+          contract: permit-to-egress
+
+        # from tn-cl-tal-4
+        - name: permit-to-cl-tal-4-nodes
+          tenant: cl-tal-4
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-4-ingress
+          tenant: cl-tal-4
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-4-egress
+          tenant: cl-tal-4
+          contract: permit-to-egress
+
+        # from tn-cl-tal-5
+        - name: permit-to-cl-tal-5-nodes
+          tenant: cl-tal-5
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-5-ingress
+          tenant: cl-tal-5
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-5-egress
+          tenant: cl-tal-5
+          contract: permit-to-egress
+
+        # from tn-cl-tal-6
+        - name: permit-to-cl-tal-6-nodes
+          tenant: cl-tal-6
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-6-ingress
+          tenant: cl-tal-6
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-6-egress
+          tenant: cl-tal-6
+          contract: permit-to-egress
+
+        # from tn-cl-tal-7
+        - name: permit-to-cl-tal-7-nodes
+          tenant: cl-tal-7
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-7-ingress
+          tenant: cl-tal-7
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-7-egress
+          tenant: cl-tal-7
+          contract: permit-to-egress
+
+        # from tn-cl-tal-8
+        - name: permit-to-cl-tal-8-nodes
+          tenant: cl-tal-8
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-8-ingress
+          tenant: cl-tal-8
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-8-egress
+          tenant: cl-tal-8
+          contract: permit-to-egress
+
+        # from tn-cl-tal-9
+        - name: permit-to-cl-tal-9-nodes
+          tenant: cl-tal-9
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-9-ingress
+          tenant: cl-tal-9
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-9-egress
+          tenant: cl-tal-9
+          contract: permit-to-egress
+
+        # from tn-cl-tal-10
+        - name: permit-to-cl-tal-10-nodes
+          tenant: cl-tal-10
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-10-ingress
+          tenant: cl-tal-10
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-10-egress
+          tenant: cl-tal-10
+          contract: permit-to-egress
+
+        # from tn-cl-tal-11
+        - name: permit-to-cl-tal-11-nodes
+          tenant: cl-tal-11
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-11-ingress
+          tenant: cl-tal-11
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-11-egress
+          tenant: cl-tal-11
+          contract: permit-to-egress
+
+        # from tn-cl-tal-12
+        - name: permit-to-cl-tal-12-nodes
+          tenant: cl-tal-12
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-12-ingress
+          tenant: cl-tal-12
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-12-egress
+          tenant: cl-tal-12
+          contract: permit-to-egress
+
+        # from tn-cl-tal-13
+        - name: permit-to-cl-tal-13-nodes
+          tenant: cl-tal-13
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-13-ingress
+          tenant: cl-tal-13
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-13-egress
+          tenant: cl-tal-13
+          contract: permit-to-egress
+
+        # from tn-cl-tal-14
+        - name: permit-to-cl-tal-14-nodes
+          tenant: cl-tal-14
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-14-ingress
+          tenant: cl-tal-14
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-14-egress
+          tenant: cl-tal-14
+          contract: permit-to-egress
+
+        # from tn-cl-tal-15
+        - name: permit-to-cl-tal-15-nodes
+          tenant: cl-tal-15
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-15-ingress
+          tenant: cl-tal-15
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-15-egress
+          tenant: cl-tal-15
+          contract: permit-to-egress
+
+        # from tn-cl-tal-16
+        - name: permit-to-cl-tal-16-nodes
+          tenant: cl-tal-16
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-16-ingress
+          tenant: cl-tal-16
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-16-egress
+          tenant: cl-tal-16
+          contract: permit-to-egress
+
+        # from tn-cl-tal-17
+        - name: permit-to-cl-tal-17-nodes
+          tenant: cl-tal-17
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-17-ingress
+          tenant: cl-tal-17
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-17-egress
+          tenant: cl-tal-17
+          contract: permit-to-egress
+
+        # from tn-cl-tal-18
+        - name: permit-to-cl-tal-18-nodes
+          tenant: cl-tal-18
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-18-ingress
+          tenant: cl-tal-18
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-18-egress
+          tenant: cl-tal-18
+          contract: permit-to-egress
+
+        # from tn-cl-tal-19
+        - name: permit-to-cl-tal-19-nodes
+          tenant: cl-tal-19
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-19-ingress
+          tenant: cl-tal-19
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-19-egress
+          tenant: cl-tal-19
+          contract: permit-to-egress
+
+        # from tn-cl-tal-20
+        - name: permit-to-cl-tal-20-nodes
+          tenant: cl-tal-20
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-20-ingress
+          tenant: cl-tal-20
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-20-egress
+          tenant: cl-tal-20
+          contract: permit-to-egress
+
+        # from tn-cl-tal-21
+        - name: permit-to-cl-tal-21-nodes
+          tenant: cl-tal-21
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-21-ingress
+          tenant: cl-tal-21
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-21-egress
+          tenant: cl-tal-21
+          contract: permit-to-egress
+
+        # from tn-cl-tal-22
+        - name: permit-to-cl-tal-22-nodes
+          tenant: cl-tal-22
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-22-ingress
+          tenant: cl-tal-22
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-22-egress
+          tenant: cl-tal-22
+          contract: permit-to-egress
+
+        # from tn-cl-tal-23
+        - name: permit-to-cl-tal-23-nodes
+          tenant: cl-tal-23
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-23-ingress
+          tenant: cl-tal-23
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-23-egress
+          tenant: cl-tal-23
+          contract: permit-to-egress
+
+        # from tn-cl-tal-24
+        - name: permit-to-cl-tal-24-nodes
+          tenant: cl-tal-24
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-24-ingress
+          tenant: cl-tal-24
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-24-egress
+          tenant: cl-tal-24
+          contract: permit-to-egress
+
+        # from tn-cl-tal-25
+        - name: permit-to-cl-tal-25-nodes
+          tenant: cl-tal-25
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-25-ingress
+          tenant: cl-tal-25
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-25-egress
+          tenant: cl-tal-25
+          contract: permit-to-egress
+
+        # from tn-cl-tal-26
+        - name: permit-to-cl-tal-26-nodes
+          tenant: cl-tal-26
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-26-ingress
+          tenant: cl-tal-26
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-26-egress
+          tenant: cl-tal-26
+          contract: permit-to-egress
+
+        # from tn-cl-tal-27
+        - name: permit-to-cl-tal-27-nodes
+          tenant: cl-tal-27
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-27-ingress
+          tenant: cl-tal-27
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-27-egress
+          tenant: cl-tal-27
+          contract: permit-to-egress
+
+        # from tn-cl-tal-28
+        - name: permit-to-cl-tal-28-nodes
+          tenant: cl-tal-28
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-28-ingress
+          tenant: cl-tal-28
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-28-egress
+          tenant: cl-tal-28
+          contract: permit-to-egress
+
+        # from tn-cl-tal-29
+        - name: permit-to-cl-tal-29-nodes
+          tenant: cl-tal-29
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-29-ingress
+          tenant: cl-tal-29
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-29-egress
+          tenant: cl-tal-29
+          contract: permit-to-egress
+
+        # from tn-cl-tal-30
+        - name: permit-to-cl-tal-30-nodes
+          tenant: cl-tal-30
+          contract: permit-to-nodes
+        - name: permit-to-cl-tal-30-ingress
+          tenant: cl-tal-30
+          contract: permit-to-ingress
+        - name: permit-to-cl-tal-30-egress
+          tenant: cl-tal-30
+          contract: permit-to-egress
+
+      policies:
+        bgp_route_summarization_policies:
+          - name: bgp-summary-pol
+            summary_only: true
+            af_ucast: true

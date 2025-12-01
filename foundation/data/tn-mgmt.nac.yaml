@@ -1,0 +1,58 @@
+apic:
+  tenants:
+    - name: mgmt
+      inb_endpoint_groups:
+        - name: default
+          vlan: 11
+          bridge_domain: inb
+          contracts:
+            providers:
+              - permit-to-10.1.11.0-24
+          subnets:
+            - ip: 10.1.11.1/24
+              public: true
+              shared: true
+            # imported_consumers:
+            #   - permit-to-titansphere-10.61.133.0-24
+          
+      bridge_domains:
+        - name: inb
+          vrf: inb
+          subnets:
+            - ip: 10.1.11.1/24
+              shared: true
+
+      contracts:
+        - name: permit-to-10.1.11.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+      filters:
+        - name: tcp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: tcp
+              
+        - name: udp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: udp
+
+        - name: icmp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ipv4
+              protocol: icmp
+
+      imported_contracts:
+        # from tn-titansphere
+        - name: permit-to-titansphere-10.61.133.0-24
+          tenant: titansphere
+          contract: permit-to-10.61.133.0-24

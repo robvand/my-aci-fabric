@@ -1,0 +1,136 @@
+apic:
+  access_policies:
+    physical_domains:
+      - name: inb-mgmt
+        vlan_pool: inb-mgmt-vlans
+
+      - name: baelen
+        vlan_pool: baelen-vlans
+
+      - name: purestorage
+        vlan_pool: purestorage-vlans
+
+      - name: netapp
+        vlan_pool: netapp-vlans
+
+      - name: edge
+        vlan_pool: edge-vlans
+
+      - name: flexpod
+        vlan_pool: flexpod-vlans
+
+      - name: nutanix
+        vlan_pool: nutanix-vlans
+
+      - name: titansphere
+        vlan_pool: titansphere-vlans
+
+      - name: ts-ocp-1-bm
+        vlan_pool: ts-ocp-1-vlans
+      
+      - name: ts-ocp-1-bm-virt
+        vlan_pool: ts-ocp-1-virt-vlans
+
+      - name: ts-ocp-storage
+        vlan_pool: purestorage-vlans
+
+    routed_domains:
+      - name: infraservices.vrf-01.l3out-bgp-core
+        vlan_pool: infraservices.vrf-01.l3out-bgp-core-vlans
+
+      - name: ts-ocp-1.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: ts-tal-1.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      ## For Cisco Live
+      - name: cl-tal-1.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-2.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-3.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-4.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-5.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-6.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-7.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-8.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-9.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-10.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-11.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-12.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-13.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-14.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-15.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-16.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-17.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-18.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-19.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-20.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-21.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-22.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-23.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-24.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-25.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-26.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-27.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-28.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-29.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans
+
+      - name: cl-tal-30.vrf-01.l3out-bgp
+        vlan_pool: titansphere-vlans

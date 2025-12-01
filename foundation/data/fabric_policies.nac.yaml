@@ -1,0 +1,551 @@
+apic:
+  fabric_policies:
+    fabric_bgp_as: 65009
+    fabric_bgp_rr:
+      - 201
+      - 202
+
+    leaf_switch_policy_groups:
+      - name: leafs
+        node_control_policy: telemetry       
+    spine_switch_policy_groups:
+      - name: spines
+        node_control_policy: telemetry
+
+    global_settings:
+      domain_validation: true
+      enforce_subnet_check: true
+      opflex_authentication: false
+      disable_remote_endpoint_learn: true
+      overlapping_vlan_validation: true
+      remote_leaf_direct: true
+      reallocate_gipo: false
+
+    aaa:
+      management_settings:
+        password_strength_check: true
+        password_change_during_interval: true
+        password_change_count: 2
+        password_change_interval: 48
+        password_no_change_interval: 24
+        password_history_count: 5
+        password_strength_profile:
+          password_mininum_length: 8
+          password_maximum_length: 64
+          password_strength_test_type: custom
+          password_class_flags:
+            - digits
+            - lowercase
+            - specialchars
+            - uppercase
+        web_token_timeout: 600
+        web_token_max_validity: 24
+        web_session_idle_timeout: 1200
+        include_refresh_session_records: true
+        enable_login_block: false
+        login_block_duration: 1
+        login_max_failed_attempts: 5
+        login_max_failed_attempts_window: 1
+      default_realm: ldap
+      default_login_domain: amsdmz
+      console_realm: ldap
+      console_login_domain: amsdmz
+
+      ldap:
+        providers:
+          - hostname_ip: ad1.amsdmz.local
+            mgmt_epg: oob
+            bind_dn: "CN=apic,OU=Users,OU=amsdmz,DC=amsdmz,DC=local"
+            base_dn: "OU=Users,OU=amsdmz,DC=amsdmz,DC=local"
+            password: "password"
+            attribute: memberOf
+            enable_ssl: true
+            port: 636
+            ssl_validation_level: permissive
+          - hostname_ip: ad2.amsdmz.local
+            mgmt_epg: oob
+            bind_dn: "CN=apic,OU=Users,OU=amsdmz,DC=amsdmz,DC=local"
+            base_dn: "OU=Users,OU=amsdmz,DC=amsdmz,DC=local"
+            password: "password"
+            attribute: memberOf
+            enable_ssl: true
+            port: 636
+            ssl_validation_level: permissive
+        group_map_rules:
+          - name: apic-admins
+            group_dn: "CN=ACI-ADMINS,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: all
+                roles:
+                  - name: admin
+                    privilege_type: write
+          - name: apic-ro
+            group_dn: "CN=ACI-RO,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: all
+                roles:
+                  - name: read-all
+                    privilege_type: read
+            # Cisco Live Group Maps
+          - name: cl-tal-1
+            group_dn: "CN=cl-tal-1,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-1
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-2
+            group_dn: "CN=cl-tal-2,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-2
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-3
+            group_dn: "CN=cl-tal-3,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-3
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-4
+            group_dn: "CN=cl-tal-4,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-4
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-5
+            group_dn: "CN=cl-tal-5,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-5
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-6
+            group_dn: "CN=cl-tal-6,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-6
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-7
+            group_dn: "CN=cl-tal-7,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-7
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-8
+            group_dn: "CN=cl-tal-8,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-8
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-9
+            group_dn: "CN=cl-tal-9,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-9
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-10
+            group_dn: "CN=cl-tal-10,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-10
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-11
+            group_dn: "CN=cl-tal-11,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-11
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-12
+            group_dn: "CN=cl-tal-12,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-12
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-13
+            group_dn: "CN=cl-tal-13,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-13
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-14
+            group_dn: "CN=cl-tal-14,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-14
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-15
+            group_dn: "CN=cl-tal-15,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-15
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-16
+            group_dn: "CN=cl-tal-16,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-16
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-17
+            group_dn: "CN=cl-tal-17,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-17
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-18
+            group_dn: "CN=cl-tal-18,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-18
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-19
+            group_dn: "CN=cl-tal-19,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-19
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-20
+            group_dn: "CN=cl-tal-20,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-20
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-21
+            group_dn: "CN=cl-tal-21,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-21
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-22
+            group_dn: "CN=cl-tal-22,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-22
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-23
+            group_dn: "CN=cl-tal-23,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-23
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-24
+            group_dn: "CN=cl-tal-24,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-24
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-25
+            group_dn: "CN=cl-tal-25,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-25
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-26
+            group_dn: "CN=cl-tal-26,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-26
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-27
+            group_dn: "CN=cl-tal-27,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-27
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-28
+            group_dn: "CN=cl-tal-28,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-28
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-29
+            group_dn: "CN=cl-tal-29,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-29
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+          - name: cl-tal-30
+            group_dn: "CN=cl-tal-30,OU=Groups,OU=amsdmz,DC=amsdmz,DC=local"
+            security_domains:
+              - name: cl-tal-30
+                roles:
+                  - name: admin
+                    privilege_type: write
+              - name: ts-ocp-1
+                roles:
+                  - name: admin
+                    privilege_type: read
+
+
+        group_maps:
+          - name: amsdmz-ldap-map
+            rules:
+              - name: apic-admins
+              - name: apic-ro
+              - name: cl-tal-1
+              - name: cl-tal-2
+              - name: cl-tal-3
+              - name: cl-tal-4
+              - name: cl-tal-5
+              - name: cl-tal-6
+              - name: cl-tal-7
+              - name: cl-tal-8
+              - name: cl-tal-9
+              - name: cl-tal-10
+              - name: cl-tal-11
+              - name: cl-tal-12
+              - name: cl-tal-13
+              - name: cl-tal-14
+              - name: cl-tal-15
+              - name: cl-tal-16
+              - name: cl-tal-17
+              - name: cl-tal-18
+              - name: cl-tal-19
+              - name: cl-tal-20
+              - name: cl-tal-21
+              - name: cl-tal-22
+              - name: cl-tal-23
+              - name: cl-tal-24
+              - name: cl-tal-25
+              - name: cl-tal-26
+              - name: cl-tal-27
+              - name: cl-tal-28
+              - name: cl-tal-29
+              - name: cl-tal-30
+
+      login_domains:
+        - name: amsdmz
+          realm: ldap
+          auth_choice: LdapGroupMap
+          ldap_group_map: amsdmz-ldap-map
+          ldap_providers:
+            - hostname_ip: ad1.amsdmz.local
+              priority: 0
+            - hostname_ip: ad2.amsdmz.local
+              priority: 1
+
+      security_domains:
+        - name: ts-ocp-1
+        - name: cl-tal-1
+        - name: cl-tal-2
+        - name: cl-tal-3
+        - name: cl-tal-4
+        - name: cl-tal-5
+        - name: cl-tal-6
+        - name: cl-tal-7
+        - name: cl-tal-8
+        - name: cl-tal-9
+        - name: cl-tal-10
+        - name: cl-tal-11
+        - name: cl-tal-12
+        - name: cl-tal-13
+        - name: cl-tal-14
+        - name: cl-tal-15
+        - name: cl-tal-16
+        - name: cl-tal-17
+        - name: cl-tal-18
+        - name: cl-tal-19
+        - name: cl-tal-20
+        - name: cl-tal-21
+        - name: cl-tal-22
+        - name: cl-tal-23
+        - name: cl-tal-24
+        - name: cl-tal-25
+        - name: cl-tal-26
+        - name: cl-tal-27
+        - name: cl-tal-28
+        - name: cl-tal-29
+        - name: cl-tal-30
+    
+    apic_conn_pref: ooband
+    banners:
+      apic_gui_alias: "Amsterdam"
+      apic_gui_banner_message: "UNAUTHORIZED ACCESS TO THIS DEVICE IS STRICTLY PROHIBITED"
+      apic_cli_banner: "UNAUTHORIZED ACCESS TO THIS DEVICE IS STRICTLY PROHIBITED"
+      switch_cli_banner: "UNAUTHORIZED ACCESS TO THIS DEVICE IS STRICTLY PROHIBITED"
+    date_time_format:
+      display_format: local
+      timezone: p120_Europe-Amsterdam
+      show_offset: true
+    ep_loop_protection:
+      admin_state: true
+      detection_interval: 60
+      detection_multiplier: 4
+      bd_learn_disable: true
+      port_disable: false
+    rogue_ep_control:
+      admin_state: true
+      detection_interval: 30
+      detection_multiplier: 10
+      hold_interval: 1800
+    ip_aging: true
+    remote_locations:
+      - name: backup
+        hostname_ip: 10.61.130.8
+        protocol: scp
+        path: /home/ipam/backup-fabric-amsterdam
+        auth_type: password
+        username: ipam
+        password: password
+        mgmt_epg: oob
+    config_exports:
+      - name: daily-ext-backup
+        format: json
+        snapshot: false
+        remote_location: backup
+        scheduler: every-day
+    schedulers:
+      - name: every-day
+        recurring_windows:
+          - name: daily
+            day: every-day
+            hour: 2
+    ptp:
+      admin_state: true
+    switch_policies:
+      node_control_policies:
+        - name: telemetry
+          dom: true
+          telemetry: telemetry

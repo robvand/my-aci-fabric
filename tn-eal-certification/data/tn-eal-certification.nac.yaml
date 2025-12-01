@@ -1,0 +1,94 @@
+---
+apic:
+  tenants:
+    - name: eal-certification
+      vrfs:
+        - name: vrf-01
+
+      bridge_domains:
+        - name: 192.168.66.1_24
+          vrf: vrf-01
+          subnets: 
+          - ip: 192.168.66.1/24
+
+        - name: 192.168.67.1_24
+          vrf: vrf-01
+          subnets: 
+          - ip: 192.168.67.1/24   
+
+      application_profiles:
+        - name: network-segments
+          endpoint_groups:
+            - name: client
+              physical_domains:
+                - eal-node
+              bridge_domain: 192.168.66.1_24
+              # static_ports:
+              #   - node_id: 101
+              #     port: 10
+              #     vlan: 66
+              #   - node_id: 102
+              #     port: 10
+              #     vlan: 66
+              contracts:
+                consumers:
+                  - permit-to-192.168.67.0_24
+
+
+            - name: server
+              physical_domains:
+                - eal-node
+              bridge_domain: 192.168.67.1_24
+              # static_ports:
+              #   - node_id: 101
+              #     port: 10
+              #     vlan: 67
+              #   - node_id: 102
+              #     port: 10
+              #     vlan: 67
+              contracts:
+                providers:
+                  - permit-to-192.168.67.0_24
+
+      filters:
+      #   - name: icmp
+      #     entries:
+      #       - name: icmp
+      #         ethertype: ipv4
+      #         protocol: icmp
+        - name: tcp-src-any-to-dst-5555
+          entries:
+            - name: src-any-to-dst-5555
+              ethertype: ip
+              protocol: tcp
+              destination_to_port: 5555
+              destination_from_port: 5555
+
+      contracts:
+        - name: permit-to-192.168.67.0_24
+          scope: context
+          subjects:
+            # - name: icmp-entries
+            #   filters:
+            #     - filter: icmp
+            #       log: true
+            - name: tcp-entries
+              filters:
+                - filter: tcp-src-any-to-dst-5555
+                  log: true
+
+      services:
+        service_graph_templates:
+          - name: TEMPLATE1
+            alias: TEMPLATE1-ALIAS
+            description: My Desc
+            template_type: FW_ROUTED
+            redirect: true
+            share_encapsulation: false
+            device:
+              tenant: eal-certification
+              name: DEV1
+            consumer:
+              direct_connect: false
+            provider:
+              direct_connect: true

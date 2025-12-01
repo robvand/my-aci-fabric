@@ -1,0 +1,267 @@
+apic:
+  access_policies:
+    vlan_pools:
+      - name: inb-mgmt-vlans
+        allocation: static
+        ranges:
+          - from: 11
+            allocation: static
+            description: aci inband management
+            to: 11
+
+      - name: nutanix-vlans
+        allocation: static
+        ranges:
+          - from: 127
+            allocation: static
+            description: nutanix infraservices
+            to: 127
+          - from: 128
+            allocation: static
+            description: nutanix endpoints
+            to: 128
+
+      - name: baelen-vlans
+        allocation: static
+        ranges:
+          - from: 131
+            allocation: static
+            description: openshift
+            to: 131
+
+      - name: flexpod-vlans
+        allocation: static
+        ranges:
+          - from: 132
+            allocation: static
+            description: flexpod
+            to: 132
+
+      - name: edge-vlans
+        allocation: static
+        ranges:
+          - from: 134
+            allocation: static
+            description: unified edge
+            to: 134
+          - from: 210 # non-routed network
+            allocation: static
+            description: unified edge storage - azure local
+            to: 210
+
+      - name: purestorage-vlans
+        allocation: static
+        description: vlans used for purestorage iscsi
+        ranges:
+          - from: 201
+            allocation: static
+            description: vlan to ct0
+            to: 201
+          - from: 202
+            allocation: static
+            description: vlan to ct1
+            to: 202
+
+      - name: netapp-vlans
+        allocation: static
+        description: vlans used for netapp storage services
+        ranges:
+          - from: 203
+            allocation: static
+            description: vlan to flexpod svm
+            to: 203
+          - from: 204
+            allocation: static
+            description: vlan to flexpod svm
+            to: 204
+          - from: 205
+            allocation: static
+            description: vlan to ts-ocp-1 svm
+            to: 205
+
+      - name: infraservices.vrf-01.l3out-bgp-core-vlans
+        allocation: static
+        ranges:
+          - from: 302
+            allocation: static
+            description: vlan to core cat9k svi for routed BGP
+            to: 302
+            # do not use 303 - used for nxos fabric
+
+      - name: titansphere-vlans
+        allocation: static
+        ranges:
+          - from: 401
+            allocation: static
+            description: static vlan for titansphere esxi nodes
+            to: 401
+          - from: 402
+            allocation: static
+            description: vlan for titansphere vmotion
+            to: 402       
+          - from: 403
+            allocation: static
+            description: static vlan for vms in 10.61.130.0-23
+            to: 403
+          - from: 404
+            allocation: static
+            description: static vlan for ts-ocp-1
+            to: 404
+          - from: 411
+            allocation: static
+            description: vlan for nd-data
+            to: 411
+          - from: 412
+            allocation: static
+            description: vlan ts-tal-1
+            to: 412
+            ## For Cisco Live
+          - from: 501
+            allocation: static
+            description: vlan cl-tal-1
+            to: 501  
+          - from: 502
+            allocation: static
+            description: vlan cl-tal-2
+            to: 502
+          - from: 503
+            allocation: static
+            description: vlan cl-tal-3
+            to: 503
+          - from: 504
+            allocation: static
+            description: vlan cl-tal-4
+            to: 504
+          - from: 505
+            allocation: static
+            description: vlan cl-tal-5
+            to: 505
+          - from: 506
+            allocation: static
+            description: vlan cl-tal-6
+            to: 506
+          - from: 507
+            allocation: static
+            description: vlan cl-tal-7
+            to: 507
+          - from: 508
+            allocation: static
+            description: vlan cl-tal-8
+            to: 508
+          - from: 509
+            allocation: static
+            description: vlan cl-tal-9
+            to: 509
+          - from: 510
+            allocation: static
+            description: vlan cl-tal-10
+            to: 510
+          - from: 511
+            allocation: static
+            description: vlan cl-tal-11
+            to: 511
+          - from: 512
+            allocation: static
+            description: vlan cl-tal-12
+            to: 512
+          - from: 513
+            allocation: static
+            description: vlan cl-tal-13
+            to: 513
+          - from: 514
+            allocation: static
+            description: vlan cl-tal-14
+            to: 514
+          - from: 515
+            allocation: static
+            description: vlan cl-tal-15
+            to: 515
+          - from: 516
+            allocation: static
+            description: vlan cl-tal-16
+            to: 516
+          - from: 517
+            allocation: static
+            description: vlan cl-tal-17
+            to: 517
+          - from: 518
+            allocation: static
+            description: vlan cl-tal-18
+            to: 518
+          - from: 519
+            allocation: static
+            description: vlan cl-tal-19
+            to: 519
+          - from: 520
+            allocation: static
+            description: vlan cl-tal-20
+            to: 520
+          - from: 521
+            allocation: static
+            description: vlan cl-tal-21
+            to: 521
+          - from: 522
+            allocation: static
+            description: vlan cl-tal-22
+            to: 522
+          - from: 523
+            allocation: static
+            description: vlan cl-tal-23
+            to: 523
+          - from: 524
+            allocation: static
+            description: vlan cl-tal-24
+            to: 524
+          - from: 525
+            allocation: static
+            description: vlan cl-tal-25
+            to: 525
+          - from: 526
+            allocation: static
+            description: vlan cl-tal-26
+            to: 526
+          - from: 527
+            allocation: static
+            description: vlan cl-tal-27
+            to: 527
+          - from: 528
+            allocation: static
+            description: vlan cl-tal-28
+            to: 528
+          - from: 529
+            allocation: static
+            description: vlan cl-tal-29
+            to: 529
+          - from: 530
+            allocation: static
+            description: vlan cl-tal-30
+            to: 530
+
+      - name: ts-ocp-1-vlans
+        allocation: static
+        ranges:
+          - from: 404
+            allocation: static
+            description: static vlan for ts-ocp-1
+            to: 404
+
+      - name: ts-ocp-1-virt-vlans
+        allocation: static
+        ranges:
+          - from: 801
+            allocation: static
+            description: static vlan for ts-ocp-1 nad 801
+            to: 801
+          - from: 802
+            allocation: static
+            description: static vlan for ts-ocp-1 nad 802
+            to: 802
+          - from: 803
+            allocation: static
+            description: static vlan for ts-ocp-1 nad 803
+            to: 803
+
+
+
+
+    # do not use 601-800

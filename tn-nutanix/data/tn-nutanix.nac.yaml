@@ -1,0 +1,83 @@
+---
+apic:
+  tenants:
+    - name: nutanix
+      vrfs:
+        - name: nutanix.vrf-01
+          contracts:
+            providers:
+              - nutanix-vzany
+            consumers:
+              - nutanix-vzany
+            
+      bridge_domains:
+        - name: 10.61.127.0-24
+          vrf: nutanix.vrf-01
+          subnets: 
+          - ip: 10.61.127.1/24
+            shared: true
+            public: true    
+
+        - name: 10.61.128.0-24
+          vrf: nutanix.vrf-01
+          subnets: 
+          - ip: 10.61.128.1/24
+            shared: true
+            public: true
+
+      application_profiles:
+        - name: nutanix
+          endpoint_groups:
+            - name: infraservices
+              physical_domains:
+                - nutanix
+              bridge_domain: 10.61.127.0-24
+              subnets:
+                - ip: 10.61.127.1/24
+                  public: true
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-10.61.127.0-24
+
+            - name: endpoints
+              physical_domains:
+                - nutanix
+              bridge_domain: 10.61.128.0-24
+              subnets:
+                - ip: 10.61.128.1/24
+                  public: true
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-10.61.128.0-24
+
+      contracts:
+        - name: permit-to-10.61.127.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+                
+        - name: permit-to-10.61.128.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: nutanix-vzany
+          scope: context
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+      filters:
+        - name: ip-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: unspecified
+

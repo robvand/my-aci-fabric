@@ -1,0 +1,228 @@
+apic:
+  access_policies:
+    aaeps:
+      - name: vlans-allowed-to-inb-mgmt
+        physical_domains:
+          - inb-mgmt
+
+      - name: vlans-allowed-to-cat-core
+        routed_domains:
+          - infraservices.vrf-01.l3out-bgp-core
+
+      - name: vlans-allowed-to-baelen
+        physical_domains:
+          - baelen
+        endpoint_groups:
+          - tenant: baelen
+            application_profile: network-segments
+            endpoint_group: openshift
+            vlan: 131
+
+      - name: vlans-allowed-to-edge
+        physical_domains:
+          - edge
+        endpoint_groups:
+          - tenant: edge
+            application_profile: network-segments
+            endpoint_group: vms
+            vlan: 134
+          - tenant: edge
+            application_profile: network-segments
+            endpoint_group: storage
+            vlan: 210
+
+      - name: vlans-allowed-to-flexpod
+        physical_domains:
+          - flexpod
+          - netapp
+        endpoint_groups:
+          - tenant: flexpod
+            application_profile: network-segments
+            endpoint_group: vms
+            vlan: 132
+          - tenant: infraservices
+            application_profile: netapp
+            endpoint_group: vlan-203
+            vlan: 203
+          - tenant: infraservices
+            application_profile: netapp
+            endpoint_group: vlan-204
+            vlan: 204
+
+      - name: vlans-allowed-to-purestorage-eth6
+        physical_domains:
+          - purestorage
+        endpoint_groups:
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth6
+            vlan: 201
+            mode: native
+
+      - name: vlans-allowed-to-purestorage-eth7
+        physical_domains:
+          - purestorage
+        endpoint_groups:
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth7
+            vlan: 202
+            mode: native
+
+      - name: vlans-allowed-to-netapp
+        physical_domains:
+          - netapp
+          - flexpod
+        endpoint_groups:
+          - tenant: flexpod
+            application_profile: network-segments
+            endpoint_group: vms
+            vlan: 132
+          - tenant: infraservices
+            application_profile: netapp
+            endpoint_group: vlan-203
+            vlan: 203
+          - tenant: infraservices
+            application_profile: netapp
+            endpoint_group: vlan-204
+            vlan: 204
+          - tenant: infraservices
+            application_profile: netapp
+            endpoint_group: vlan-205
+            vlan: 205
+
+      - name: vlans-allowed-to-nutanix
+        physical_domains:
+          - nutanix
+          - infra
+          - purestorage
+        endpoint_groups:
+          - tenant: nutanix
+            application_profile: nutanix
+            endpoint_group: infraservices
+            vlan: 127
+          - tenant: nutanix
+            application_profile: nutanix
+            endpoint_group: endpoints
+            vlan: 128
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth6
+            vlan: 201
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth7
+            vlan: 202
+
+      - name: vlans-allowed-to-titansphere
+        physical_domains:
+          - titansphere
+          - infra
+          - purestorage
+        routed_domains:
+          - ts-ocp-1.vrf-01.l3out-bgp
+          - ts-tal-1.vrf-01.l3out-bgp
+          - cl-tal-1.vrf-01.l3out-bgp
+          - cl-tal-2.vrf-01.l3out-bgp
+          - cl-tal-3.vrf-01.l3out-bgp
+          - cl-tal-4.vrf-01.l3out-bgp
+          - cl-tal-5.vrf-01.l3out-bgp
+          - cl-tal-6.vrf-01.l3out-bgp
+          - cl-tal-7.vrf-01.l3out-bgp
+          - cl-tal-8.vrf-01.l3out-bgp
+          - cl-tal-9.vrf-01.l3out-bgp
+          - cl-tal-10.vrf-01.l3out-bgp
+          - cl-tal-11.vrf-01.l3out-bgp
+          - cl-tal-12.vrf-01.l3out-bgp
+          - cl-tal-13.vrf-01.l3out-bgp
+          - cl-tal-14.vrf-01.l3out-bgp
+          - cl-tal-15.vrf-01.l3out-bgp
+          - cl-tal-16.vrf-01.l3out-bgp
+          - cl-tal-17.vrf-01.l3out-bgp
+          - cl-tal-18.vrf-01.l3out-bgp
+          - cl-tal-19.vrf-01.l3out-bgp
+          - cl-tal-20.vrf-01.l3out-bgp
+          - cl-tal-21.vrf-01.l3out-bgp
+          - cl-tal-22.vrf-01.l3out-bgp
+          - cl-tal-23.vrf-01.l3out-bgp
+          - cl-tal-24.vrf-01.l3out-bgp
+          - cl-tal-25.vrf-01.l3out-bgp
+          - cl-tal-26.vrf-01.l3out-bgp
+          - cl-tal-27.vrf-01.l3out-bgp
+          - cl-tal-28.vrf-01.l3out-bgp
+          - cl-tal-29.vrf-01.l3out-bgp
+          - cl-tal-30.vrf-01.l3out-bgp
+        endpoint_groups:
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth6
+            vlan: 201
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth7
+            vlan: 202
+          - tenant: titansphere
+            application_profile: titansphere
+            endpoint_group: nodes
+            vlan: 401
+          - tenant: titansphere
+            application_profile: titansphere
+            endpoint_group: vmotion
+            vlan: 402      
+          - tenant: titansphere
+            application_profile: titansphere
+            endpoint_group: vms
+            vlan: 403
+          - tenant: titansphere
+            application_profile: titansphere
+            endpoint_group: nd-data
+            vlan: 411   
+
+      - name: vlans-allowed-to-ts-ocp-1-bm
+        physical_domains:
+          - ts-ocp-1-bm
+        routed_domains:
+          - ts-ocp-1.vrf-01.l3out-bgp
+
+      - name: vlans-allowed-to-ts-ocp-1-bm-virt
+        physical_domains:
+          - ts-ocp-1-bm-virt
+        endpoint_groups:
+          - tenant: ts-ocp-1
+            application_profile: vms
+            endpoint_group: vlan-801
+            vlan: 801
+          - tenant: ts-ocp-1
+            application_profile: vms
+            endpoint_group: vlan-802
+            vlan: 802
+          # managed under EPG in tenant due to RBAC restrictions
+          # - tenant: ts-ocp-1
+          #   application_profile: vms
+          #   endpoint_group: vlan-803
+          #   vlan: 803
+
+      - name: vlans-allowed-to-ts-ocp-storage-ens1f2
+        physical_domains:
+          - ts-ocp-storage
+        endpoint_groups:
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth6
+            vlan: 201
+            mode: native
+
+      - name: vlans-allowed-to-ts-ocp-storage-ens1f3
+        physical_domains:
+          - ts-ocp-storage
+        endpoint_groups:
+          - tenant: infraservices
+            application_profile: purestorage
+            endpoint_group: eth7
+            vlan: 202
+            mode: native
+
+    interface_policies:
+      l2_policies:
+        - name: port-local-vlans
+          vlan_scope: portlocal

@@ -1,0 +1,183 @@
+
+apic:
+  tenants:
+    - name: ts-tal-1
+      vrfs:
+        - name: ts-tal-1.vrf-01 
+
+      # application_profiles:
+      #   - name: openshift
+      #     endpoint_security_groups:
+      #       - name: ns1
+      #         vrf: ts-ocp-1.vrf-01
+      #         deployment_immediacy: lazy
+      #         contracts:
+      #           providers:
+      #             - permit-to-ingress
+
+      l3outs:
+        - name: ts-tal-1.vrf-01.bgp
+          description: L3out Floating SVI to ts-tal-1
+          vrf: ts-tal-1.vrf-01
+          domain: ts-tal-1.vrf-01.l3out-bgp
+
+          external_endpoint_groups:
+            - name: nodes
+              description: tal nodes
+              subnets:
+                - prefix: 10.61.7.32/28
+                  shared_route_control: true
+                  import_security: true
+                  shared_security: true
+              contracts:
+                providers:
+                  - permit-to-10.61.7.32-28
+                consumers:
+                  - permit-to-10.61.7.48-28  
+
+            - name: egress # pod initiated traffic via egressgw
+              description: tal egress
+              subnets:
+                - prefix: 10.61.7.80/28
+                  shared_route_control: true
+                  import_security: true
+                  shared_security: true
+              contracts:
+                providers:
+                  - permit-to-10.61.7.80-28
+
+            - name: ingress # full lb service range
+              description: tal service range
+              subnets:
+                - prefix: 10.61.7.48/28
+                  shared_route_control: true
+                  import_security: true
+                  shared_security: true
+                  aggregate_shared_route_control: true  
+              contracts:
+                providers:
+                  - permit-to-10.61.7.48-28       
+
+
+          node_profiles:
+            - name: border-leafs
+              nodes:
+                - node_id: 101
+                  router_id: 101.1.0.4               
+                - node_id: 102
+                  router_id: 102.1.0.4   
+              bgp:
+                as_path_policy: cilium-bp
+              interface_profiles:     
+                - name: border-leafs              # this creates a single interface profile for the vpc, with 2x anchor nodes
+                  bfd_policy: cilium-bfd
+                  interfaces:
+                    - node_id: 101
+                      mode: regular
+                      vlan: 412
+                      floating_svi: true
+                      paths:
+                        - floating_ip: 10.61.7.45/28
+                          physical_domain: titansphere
+                      ip: 10.61.7.43/28
+                      ip_shared: 10.61.7.46/28
+                      mtu: 9000
+                      bgp_peers:
+                        - ip: 10.61.7.32/28
+                          remote_as: 65115
+                          local_as: 65002
+                          as_override: true
+                          disable_peer_as_check: true
+                          multicast_address_family: false
+                          as_propagate: no-prepend
+                          peer_prefix_policy: cilium-cni
+                    - node_id: 102
+                      mode: regular
+                      vlan: 412
+                      floating_svi: true
+                      paths:
+                        - floating_ip: 10.61.7.45/28
+                          physical_domain: titansphere
+                      ip: 10.61.7.44/28
+                      ip_shared: 10.61.7.46/28
+                      mtu: 9000
+                      bgp_peers:
+                        - ip: 10.61.7.32/28
+                          remote_as: 65115
+                          local_as: 65002
+                          as_override: true
+                          disable_peer_as_check: true
+                          multicast_address_family: false
+                          as_propagate: no-prepend
+                          peer_prefix_policy: cilium-cni
+
+      policies:
+        bfd_interface_policies:
+          - name: cilium-bfd
+            description: cilium optimised bfd values
+            subinterface_optimization: false
+            detection_multiplier: 10
+            echo_admin_state: true
+            echo_rx_interval: 50
+            min_rx_interval: 300
+            min_tx_interval: 300
+
+        bgp_best_path_policies:
+          - name: cilium-bp
+            ignore_igp_metric: true
+
+        bgp_peer_prefix_policies:
+          - name: cilium-cni
+            description: BGP prefix policies for cilium cni
+            action: reject
+            threshold: 75
+            max_prefixes: 500
+
+      contracts:
+        - name: permit-to-10.61.7.32-28
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-10.61.7.48-28
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-10.61.7.80-28
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+      filters:
+        - name: tcp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: tcp
+              
+        - name: udp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: udp
+
+        - name: icmp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ipv4
+              protocol: icmp
+
+

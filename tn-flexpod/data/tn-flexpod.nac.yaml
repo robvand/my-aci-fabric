@@ -1,0 +1,85 @@
+---
+apic:
+  tenants:
+    - name: flexpod
+      vrfs:
+        - name: flexpod.vrf-01
+          leaked_internal_prefixes:
+            - prefix: 10.61.132.0/24
+              destinations:
+                - tenant: titansphere
+                  vrf: titansphere.vrf-01 
+          contracts:
+            providers:
+              - flexpod-vzany
+            consumers:
+              - flexpod-vzany
+            
+      bridge_domains:
+        - name: 10.61.132.0-24
+          vrf: flexpod.vrf-01
+          subnets: 
+          - ip: 10.61.132.1/24
+            shared: true
+            public: true    
+
+      application_profiles:
+        - name: network-segments
+          endpoint_groups:
+            - name: vms
+              physical_domains:
+                - flexpod
+                - netapp
+              bridge_domain: 10.61.132.0-24
+              subnets:
+                - ip: 10.61.132.1/24
+                  public: true
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-10.61.132.0-24
+
+          endpoint_security_groups:
+            - name: vms
+              vrf: flexpod.vrf-01
+              contracts:
+                providers:
+                  - permit-to-vms
+                imported_consumers:
+                  - permit-to-titansphere-vms
+              epg_selectors:
+                - endpoint_group: vms
+
+      contracts:
+        - name: permit-to-10.61.132.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: permit-to-vms
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: flexpod-vzany
+          scope: context
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+      filters:
+        - name: ip-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: unspecified
+
+      imported_contracts:
+        - name: permit-to-titansphere-vms
+          tenant: titansphere
+          contract: permit-to-vms

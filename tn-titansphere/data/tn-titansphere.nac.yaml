@@ -1,0 +1,257 @@
+---
+apic:
+  tenants:
+    - name: titansphere
+      vrfs:
+        - name: titansphere.vrf-01
+          leaked_internal_prefixes:
+            - prefix: 10.61.130.0/24
+              destinations:
+                - tenant: flexpod
+                  vrf: flexpod.vrf-01             
+                - tenant: ts-ocp-1
+                  vrf: ts-ocp-1.vrf-01
+                - tenant: cl-tal-1
+                  vrf: cl-tal-1.vrf-01
+                - tenant: cl-tal-2
+                  vrf: cl-tal-2.vrf-01
+                - tenant: cl-tal-3
+                  vrf: cl-tal-3.vrf-01
+                - tenant: cl-tal-4
+                  vrf: cl-tal-4.vrf-01
+                - tenant: cl-tal-5
+                  vrf: cl-tal-5.vrf-01
+                - tenant: cl-tal-6
+                  vrf: cl-tal-6.vrf-01
+                - tenant: cl-tal-7
+                  vrf: cl-tal-7.vrf-01
+                - tenant: cl-tal-8
+                  vrf: cl-tal-8.vrf-01
+                - tenant: cl-tal-9
+                  vrf: cl-tal-9.vrf-01
+                - tenant: cl-tal-10
+                  vrf: cl-tal-10.vrf-01
+                - tenant: cl-tal-11
+                  vrf: cl-tal-11.vrf-01
+                - tenant: cl-tal-12
+                  vrf: cl-tal-12.vrf-01
+                - tenant: cl-tal-13
+                  vrf: cl-tal-13.vrf-01
+                - tenant: cl-tal-14
+                  vrf: cl-tal-14.vrf-01
+                - tenant: cl-tal-15
+                  vrf: cl-tal-15.vrf-01
+                - tenant: cl-tal-16
+                  vrf: cl-tal-16.vrf-01
+                - tenant: cl-tal-17
+                  vrf: cl-tal-17.vrf-01
+                - tenant: cl-tal-18
+                  vrf: cl-tal-18.vrf-01
+                - tenant: cl-tal-19
+                  vrf: cl-tal-19.vrf-01
+                - tenant: cl-tal-20
+                  vrf: cl-tal-20.vrf-01
+                - tenant: cl-tal-21
+                  vrf: cl-tal-21.vrf-01
+                - tenant: cl-tal-22
+                  vrf: cl-tal-22.vrf-01
+                - tenant: cl-tal-23
+                  vrf: cl-tal-23.vrf-01
+                - tenant: cl-tal-24
+                  vrf: cl-tal-24.vrf-01
+                - tenant: cl-tal-25
+                  vrf: cl-tal-25.vrf-01
+                - tenant: cl-tal-26
+                  vrf: cl-tal-26.vrf-01
+                - tenant: cl-tal-27
+                  vrf: cl-tal-27.vrf-01
+                - tenant: cl-tal-28
+                  vrf: cl-tal-28.vrf-01
+                - tenant: cl-tal-29
+                  vrf: cl-tal-29.vrf-01
+                - tenant: cl-tal-30
+                  vrf: cl-tal-30.vrf-01
+
+      bridge_domains:
+        - name: 10.61.129.0-24
+          vrf: titansphere.vrf-01
+          subnets: 
+          - ip: 10.61.129.1/24
+            shared: true
+            public: true
+
+        - name: vmotion
+          vrf: titansphere.vrf-01
+          description: non-routed subnet for titansphere vmotion
+          subnets: 
+          - ip: 10.40.2.1/24
+
+        - name: 10.61.130.0-24
+          vrf: titansphere.vrf-01
+          subnets: 
+          - ip: 10.61.130.1/24
+            shared: true
+            public: true
+          dhcp_labels:
+            - dhcp_relay_policy: ad1.amsdmz.local
+              scope: tenant
+
+        - name: 10.61.133.0-24
+          vrf: titansphere.vrf-01
+          description: routed-subnet used for nd data network
+          subnets: 
+          - ip: 10.61.133.1/24
+            shared: true
+            public: true
+
+      application_profiles:
+        - name: titansphere
+          endpoint_groups:
+            - name: nodes
+              description: used for esxi node ips
+              physical_domains:
+                - titansphere
+              bridge_domain: 10.61.129.0-24
+              subnets:
+                - ip: 10.61.129.1/24
+                  public: true
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-10.61.129.0-24
+
+            - name: vmotion
+              description: used for vmotion
+              physical_domains:
+                - titansphere
+              bridge_domain: vmotion
+
+            - name: vms
+              physical_domains:
+                - titansphere
+              bridge_domain: 10.61.130.0-24
+              subnets:
+                - ip: 10.61.130.1/24
+                  public: true
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-10.61.130.0-24
+                consumers:
+                  - permit-to-10.61.129.0-24
+                imported_consumers:
+                  - permit-to-baelen-10.61.131.0-24
+                  - permit-to-ts-tal-1-10.61.7.32-28
+
+            - name: nd-data
+              physical_domains:
+                - titansphere
+              bridge_domain: 10.61.133.0-24
+              subnets:
+                - ip: 10.61.133.1/24
+                  public: true
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-10.61.133.0-24
+                consumers:
+                  - permit-to-10.61.130.0-24
+                imported_consumers:
+                  - permit-to-mgmt-10.1.11.0-24
+
+          endpoint_security_groups:
+            - name: vms
+              vrf: titansphere.vrf-01
+              contracts:
+                providers:
+                  - permit-to-vms
+                consumers:
+                  - permit-to-nodes
+                imported_consumers:
+                  - permit-to-ts-ocp-1-nodes
+              epg_selectors:
+                - endpoint_group: vms
+
+            - name: nodes
+              vrf: titansphere.vrf-01
+              contracts:
+                providers:
+                  - permit-to-nodes
+              epg_selectors:
+                - endpoint_group: nodes
+
+
+      contracts:
+        - name: permit-to-10.61.129.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: permit-to-10.61.130.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: permit-to-10.61.133.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: permit-to-nodes
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+        - name: permit-to-vms
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+
+      filters:
+        - name: ip-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: unspecified
+
+      policies:
+        dhcp_relay_policies:
+          - name: ad1.amsdmz.local
+            providers:
+              - ip: 10.100.10.20
+                type: external_epg
+                tenant: infraservices
+                l3out: infraservices.vrf-01.l3out-bgp-core
+                external_endpoint_group: external-subnets
+
+
+      imported_contracts:
+        # from tn-ts-ocp-1
+        - name: permit-to-ts-ocp-1-10.61.6.32-28
+          tenant: ts-ocp-1
+          contract: permit-to-10.61.6.32-28
+        - name: permit-to-ts-ocp-1-nodes
+          tenant: ts-ocp-1
+          contract: permit-to-nodes
+        # from tn-mgmt
+        - name: permit-to-mgmt-10.1.11.0-24
+          tenant: mgmt
+          contract: permit-to-10.1.11.0-24
+        # from tn-baelen
+        - name: permit-to-baelen-10.61.131.0-24
+          tenant: baelen
+          contract: permit-to-10.61.131.0-24
+        # from tn-ts-tal-1
+        - name: permit-to-ts-tal-1-10.61.7.32-28
+          tenant: ts-tal-1
+          contract: permit-to-10.61.7.32-28

@@ -1,0 +1,156 @@
+apic:
+  interface_policies:
+    nodes:
+      - id: 101
+        interfaces:
+          - port: 1
+            description: connected apic1
+            policy_group: inb-mgmt-access
+          - port: 3
+            description: connected to ts-ocp-1-p1 ens1f0
+            policy_group: ts-ocp-1-p1-vpc
+          - port: 4
+            description: connected to ts-ocp-1-p2 ens1f0
+            policy_group: ts-ocp-1-p2-vpc
+          - port: 5
+            description: connected to ts-ocp-1-p1 ens1f2 - storage
+            policy_group: ts-ocp-storage-ens1f2-access
+          - port: 6
+            description: connected to ts-ocp-1-p2 ens1f2 - storage
+            policy_group: ts-ocp-storage-ens1f2-access
+          - port: 7
+            description: connected to ts-ocp-2-p1 ens1f2 - storage
+            policy_group: ts-ocp-storage-ens1f2-access
+          - port: 8
+            description: connected to ts-ocp-2-p2 ens1f2 - storage
+            policy_group: ts-ocp-storage-ens1f2-access
+          - port: 11
+            description: connected to baelen ocp amd node
+            policy_group: baelen-vpc
+          - port: 13
+            description: connected to ts-ocp-1-p1 mlom eth0 - virt
+            policy_group: ts-ocp-1-p1-virt-vpc
+          - port: 14
+            description: connected to ts-ocp-1-p2 mlom eth0 - virt
+            policy_group: ts-ocp-1-p2-virt-vpc
+          - port: 15
+            description: connected to unified edge x/x
+            policy_group: edge-access           
+          - port: 25
+            description: connected to ct0.eth6
+            policy_group: purestorage-eth6-access
+          - port: 26
+            description: connected to ct1.eth6
+            policy_group: purestorage-eth6-access
+          - port: 27
+            description: connected to netapp-x
+            policy_group: netapp-1-vpc
+          - port: 28
+            description: connected to netapp-x
+            policy_group: netapp-2-vpc
+          - port: 41
+            description: connected to titansphere-fi-a eth1/5 patch 1/17
+            policy_group: titansphere-fi-a-storage-pc
+          - port: 42
+            description: connected to titansphere-fi-a eth1/6 patch 1/18
+            policy_group: titansphere-fi-a-storage-pc
+          - port: 43
+            description: connected to flexpod-fi-a eth1/1 patch 2/1
+            policy_group: flexpod-fi-a-vpc
+          - port: 44
+            description: connected to flexpod-fi-b eth1/1 patch 2/3
+            policy_group: flexpod-fi-b-vpc
+          - port: 45
+            description: connected to nutanix-fi-a eth1/9 patch 1/19
+            policy_group: nutanix-fi-a-vpc
+          - port: 46
+            description: connected to nutanix-fi-b eth1/9 patch 1/21
+            policy_group: nutanix-fi-b-vpc
+          - port: 47
+            description: connected to titansphere-fi-a eth1/1 patch 1/13
+            policy_group: titansphere-fi-a-vpc
+          - port: 48
+            description: connected to titansphere-fi-b eth1/1 patch 1/15
+            policy_group: titansphere-fi-b-vpc
+          - port: 50
+            description: vpc to core cat9k FortyGigabitEthernet5/0/3 patch 1/1
+            type: downlink
+            policy_group: cat-core-vpc            
+
+
+      - id: 102
+        interfaces:
+          - port: 1
+            description: connected apic1
+            policy_group: inb-mgmt-access   
+          - port: 3
+            description: connected to ts-ocp-1-p1 ens1f1
+            policy_group: ts-ocp-1-p1-vpc
+          - port: 4
+            description: connected to ts-ocp-1-p2 ens1f1
+            policy_group: ts-ocp-1-p2-vpc      
+          - port: 5
+            description: connected to ts-ocp-1-p1 ens1f3 - storage
+            policy_group: ts-ocp-storage-ens1f3-access
+          - port: 6
+            description: connected to ts-ocp-1-p2 ens1f3 - storage
+            policy_group: ts-ocp-storage-ens1f3-access
+          - port: 7
+            description: connected to ts-ocp-2-p1 ens1f3 - storage
+            policy_group: ts-ocp-storage-ens1f3-access
+          - port: 8
+            description: connected to ts-ocp-2-p2 ens1f3 - storage
+            policy_group: ts-ocp-storage-ens1f3-access
+          - port: 11
+            description: connected to baelen ocp amd node
+            policy_group: baelen-vpc
+          - port: 13
+            description: connected to ts-ocp-1-p1 mlom eth2 - virt
+            policy_group: ts-ocp-1-p1-virt-vpc
+          - port: 14
+            description: connected to ts-ocp-1-p2 mlom eth2 - virt
+            policy_group: ts-ocp-1-p2-virt-vpc
+          - port: 15
+            description: connected to unified edge x/x
+            policy_group: edge-access    
+          - port: 25
+            description: connected to purestorage ct0.eth7
+            policy_group: purestorage-eth7-access
+          - port: 26
+            description: connected to purestorage ct1.eth7
+            policy_group: purestorage-eth7-access
+          - port: 27
+            description: connected to netapp-x
+            policy_group: netapp-1-vpc
+          - port: 28
+            description: connected to netapp-x
+            policy_group: netapp-2-vpc
+          - port: 41
+            description: connected to titansphere-fi-b eth1/5 patch 1/23
+            policy_group: titansphere-fi-b-storage-pc
+          - port: 42
+            description: connected to titansphere-fi-b eth1/6 patch 1/24
+            policy_group: titansphere-fi-b-storage-pc            
+          - port: 43
+            description: connected to flexpod-fi-a eth1/10 patch 2/2
+            policy_group: flexpod-fi-a-vpc
+          - port: 44
+            description: connected to flexpod-fi-b eth1/10 patch 2/4
+            policy_group: flexpod-fi-b-vpc
+          - port: 45
+            description: connected to nutanix-fi-a eth1/2 patch 1/20
+            policy_group: nutanix-fi-a-vpc
+          - port: 46
+            description: connected to nutanix-fi-b eth1/2 patch 1/22
+            policy_group: nutanix-fi-b-vpc
+          - port: 47
+            description: connected to titansphere-fi-a eth1/2 patch 1/14
+            policy_group: titansphere-fi-a-vpc
+          - port: 48
+            description: connected to titansphere-fi-b eth1/2 patch 1/16
+            policy_group: titansphere-fi-b-vpc
+          - port: 50
+            description: vpc to core cat9k FortyGigabitEthernet5/0/4 patch 1/2
+            type: downlink
+            policy_group: cat-core-vpc            
+      

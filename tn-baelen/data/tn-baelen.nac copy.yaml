@@ -1,0 +1,43 @@
+---
+apic:
+  tenants:
+    - name: prod
+      vrfs:
+        - name: prod.vrf-01
+            
+      bridge_domains:
+        - name: 10.61.131.0-24
+          vrf: baelen.vrf-01
+          subnets: 
+          - ip: 10.61.131.1/24
+            shared: true
+            public: true    
+
+      application_profiles:
+        - name: network-segments
+          endpoint_groups:
+            - name: vlans
+              bridge_domain: 10.61.131.0-24
+              subnets:
+                - ip: 10.61.131.1/24
+                  public: true
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-10.61.131.0-24
+
+      contracts:
+        - name: permit-to-10.61.131.0-24
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: ip-src-any-to-dst-any
+                
+      filters:
+        - name: ip-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: unspecified
+

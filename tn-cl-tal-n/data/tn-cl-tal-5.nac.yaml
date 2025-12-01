@@ -1,0 +1,214 @@
+apic:
+  tenants:
+    - name: cl-tal-5
+      vrfs:
+        - name: cl-tal-5.vrf-01 
+          leaked_external_prefixes:
+              # catch-all towards jumphost
+            - prefix: "10.61.205.0/24"
+              destinations:
+                - tenant: titansphere
+                  vrf: titansphere.vrf-01
+              from_prefix_length: 28
+              # nodes
+            - prefix: "10.61.205.0/28"
+              destinations:
+                - tenant: infraservices
+                  vrf: infraservices.vrf-01
+              # ingress
+            - prefix: "10.61.205.16/28"
+              destinations:
+                - tenant: infraservices
+                  vrf: infraservices.vrf-01
+              from_prefix_length: 32
+              # egress
+            - prefix: "10.61.205.32/28"
+              destinations:
+                - tenant: infraservices
+                  vrf: infraservices.vrf-01
+              from_prefix_length: 32
+
+      application_profiles:
+        - name: talos
+          endpoint_security_groups:
+            - name: nodes
+              vrf: cl-tal-5.vrf-01
+              deployment_immediacy: immediate
+              ip_external_subnet_selectors:
+                - ip: "10.61.205.0/28"
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-nodes
+                consumers:
+                  - permit-to-ingress
+                imported_consumers:
+                  - permit-to-infraservices-ontap
+                  - permit-to-titansphere-vms
+
+            - name: ingress
+              vrf: cl-tal-5.vrf-01
+              deployment_immediacy: immediate
+              ip_external_subnet_selectors:
+                - ip: "10.61.205.16/28"
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-ingress
+                imported_consumers:
+                  - permit-to-titansphere-vms
+
+            - name: egress
+              vrf: cl-tal-5.vrf-01
+              deployment_immediacy: immediate
+              ip_external_subnet_selectors:
+                - ip: "10.61.205.32/28"
+                  shared: true
+              contracts:
+                providers:
+                  - permit-to-egress
+                imported_consumers:
+                  - permit-to-titansphere-vms
+
+      l3outs:     
+        - name: cl-tal-5.vrf-01.bgp
+          description: fsvi to cl-tal-5 talos nodes
+          vrf: cl-tal-5.vrf-01
+          domain: cl-tal-5.vrf-01.l3out-bgp
+          external_endpoint_groups:
+            - name: dummy
+              description: required dummy EPG to deploy L3out
+          node_profiles:
+            - name: border-leafs
+              nodes:
+                - node_id: 101
+                  router_id: 101.1.205.1               
+                - node_id: 102
+                  router_id: 102.1.205.1   
+              bgp:
+                as_path_policy: cilium-bp
+              interface_profiles:     
+                - name: border-leafs
+                  interfaces:
+                    - node_id: 101
+                      mode: regular
+                      vlan: 505
+                      floating_svi: true
+                      paths:
+                        - floating_ip: 10.61.205.13/28
+                          physical_domain: titansphere
+                      ip: 10.61.205.11/28
+                      ip_shared: 10.61.205.14/28
+                      mtu: 9000
+                      bgp_peers:
+                        - ip: 10.61.205.0/28
+                          remote_as: 65505
+                          peer_prefix_policy: cilium-cni
+                          import_route_control: default-import
+                    - node_id: 102
+                      mode: regular
+                      vlan: 505
+                      floating_svi: true
+                      paths:
+                        - floating_ip: 10.61.205.13/28
+                          physical_domain: titansphere
+                      ip: 10.61.205.12/28
+                      ip_shared: 10.61.205.14/28
+                      mtu: 9000
+                      bgp_peers:
+                        - ip: 10.61.205.0/28
+                          remote_as: 65505
+                          peer_prefix_policy: cilium-cni
+                          import_route_control: default-import
+  
+      policies:
+        route_control_route_maps:
+          - name: default-import
+            contexts:
+              - name: default
+                action: permit
+                match_rules:
+                  - all
+                set_rule: set-nhp
+
+        match_rules:
+        - name: all
+          prefixes:
+            - ip: 0.0.0.0/0
+              aggregate: true
+              to_length: 0
+              from_length: 0
+
+        set_rules:
+          - name: set-nhp
+            next_hop_propagation: true
+
+        bgp_best_path_policies:
+          - name: cilium-bp
+            ignore_igp_metric: true
+
+        bgp_peer_prefix_policies:
+          - name: cilium-cni
+            description: BGP prefix policies for cilium cni
+            action: reject
+            threshold: 75
+            max_prefixes: 500
+
+      contracts:
+        - name: permit-to-nodes
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-ingress
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+        - name: permit-to-egress
+          scope: global
+          subjects:
+            - name: all-entries
+              filters:
+                - filter: tcp-src-any-to-dst-any
+                - filter: udp-src-any-to-dst-any
+                - filter: icmp-src-any-to-dst-any
+
+      imported_contracts:
+        - name: permit-to-infraservices-ontap
+          tenant: infraservices
+          contract: permit-to-ontap                
+
+        - name: permit-to-titansphere-vms
+          tenant: titansphere
+          contract: permit-to-vms   
+          
+      filters:
+        - name: tcp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: tcp
+              
+        - name: udp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ip
+              protocol: udp
+
+        - name: icmp-src-any-to-dst-any
+          entries:
+            - name: src-any-to-dst-any
+              ethertype: ipv4
+              protocol: icmp
+
+      security_domains:
+        - cl-tal-5
